@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CodeFiturBot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0d1117; color: white; padding: 20px; }
+        header { text-align: center; padding: 20px; font-size: 24px; font-weight: bold; }
+        .container { max-width: 600px; margin: auto; text-align: center; }
+        .btn { width: 100%; background: #238636; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 10px; transition: 0.3s; }
+        .btn:hover { background: #2ea043; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #161b22;
+            color: white;
+        }
+        textarea { height: 150px; resize: vertical; }
+    </style>
+</head>
+<body>
+
+<header>Admin Dashboard - CodeFiturBot</header>
+
+<div class="container">
+    <h2>Tambah Kode Baru</h2>
+    <input type="text" id="title" placeholder="Judul Kode">
+    <input type="text" id="author" placeholder="Nama Anda">
+    <textarea id="code" placeholder="Masukkan kode..."></textarea>
+    <button class="btn" onclick="saveCode()">💾 Simpan Kode</button>
+</div>
+
+<script>
+    function saveCode() {
+        let title = document.getElementById("title").value;
+        let author = document.getElementById("author").value;
+        let code = document.getElementById("code").value;
+
+        if (title && author && code) {
+            let codes = JSON.parse(localStorage.getItem("codes")) || [];
+            let id = Math.random().toString(36).substr(2, 20);
+            codes.push({ id, title, author, code });
+            localStorage.setItem("codes", JSON.stringify(codes));
+            alert("Kode berhasil disimpan!");
+            document.getElementById("title").value = "";
+            document.getElementById("author").value = "";
+            document.getElementById("code").value = "";
+        } else {
+            alert("Harap isi semua field!");
+        }
+    }
+</script>
+
+</body>
+</html>

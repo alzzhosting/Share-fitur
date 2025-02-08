@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFiturBot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0d1117; color: white; padding: 20px; }
+        header { text-align: center; padding: 20px; font-size: 24px; font-weight: bold; }
+        .container { max-width: 600px; margin: auto; text-align: center; }
+        .btn { width: 100%; background: #238636; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 10px; transition: 0.3s; }
+        .btn:hover { background: #2ea043; }
+        .search-bar { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; }
+        .code-card {
+            background: linear-gradient(90deg, #ff00ff, #8000ff);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .code-box {
+            background: #161b22;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>CodeFiturBot</header>
+
+<div class="container">
+    <input type="text" class="search-bar" placeholder="Search snippets..." oninput="filterSnippets()">
+    <div id="code-list"></div>
+
+    <div id="view-code" style="display: none;">
+        <h2 id="title"></h2>
+        <p id="author"></p>
+        <div class="code-box" id="code"></div>
+        <button class="btn" onclick="copyCode()">📋 Salin Kode</button>
+        <button class="btn" onclick="goBack()">⬅ Kembali</button>
+    </div>
+</div>
+
+<script>
+    function loadSnippets() {
+        let codes = JSON.parse(localStorage.getItem("codes")) || [];
+        let list = document.getElementById("code-list");
+        list.innerHTML = "";
+        codes.forEach(code => {
+            let item = document.createElement("div");
+            item.className = "code-card";
+            item.innerHTML = `
+                <h3>${code.title}</h3>
+                <p>By: ${code.author}</p>
+                <button class="btn" onclick="viewCode('${code.id}')">👁 View Code</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function viewCode(id) {
+        window.location.href = `?kenzcode=${id}`;
+    }
+
+    function filterSnippets() {
+        let query = document.querySelector(".search-bar").value.toLowerCase();
+        let cards = document.querySelectorAll(".code-card");
+        cards.forEach(card => {
+            let title = card.querySelector("h3").innerText.toLowerCase();
+            card.style.display = title.includes(query) ? "block" : "none";
+        });
+    }
+
+    function checkUrl() {
+        let params = new URLSearchParams(window.location.search);
+        let id = params.get("kenzcode");
+        if (id) {
+            let codes = JSON.parse(localStorage.getItem("codes")) || [];
+            let codeData = codes.find(c => c.id === id);
+
+            if (codeData) {
+                document.getElementById("title").innerText = codeData.title;
+                document.getElementById("author").innerText = "By: " + codeData.author;
+                document.getElementById("code").innerText = codeData.code;
+                document.getElementById("code-list").style.display = "none";
+                document.querySelector(".search-bar").style.display = "none";
+                document.getElementById("view-code").style.display = "block";
+            } else {
+                document.body.innerHTML = "<h2>Kode tidak ditemukan!</h2>";
+            }
+        }
+    }
+
+    function copyCode() {
+        let codeText = document.getElementById("code").innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+            alert("Kode berhasil disalin!");
+        });
+    }
+
+    function goBack() {
+        window.location.href = "index.html";
+    }
+
+    loadSnippets();
+    checkUrl();
+</script>
+
+</body>
+</html>
